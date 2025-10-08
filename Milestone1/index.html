@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crowd Count - Analytics Platform</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Login/Register Section -->
+    <div id="auth-section" class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1 class="brand-title">Crowd Count</h1>
+                <p class="brand-subtitle">Analytics Platform</p>
+            </div>
+            
+            <div class="auth-tabs">
+                <button class="tab-btn active" data-tab="login">Login</button>
+                <button class="tab-btn" data-tab="register">Register</button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="login-form" class="auth-form active">
+                <div class="form-group">
+                    <label for="login-email" class="form-label">Email</label>
+                    <input type="email" id="login-email" class="form-control" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password" class="form-label">Password</label>
+                    <input type="password" id="login-password" class="form-control" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" class="btn btn--primary btn--full-width">Login</button>
+                <div id="login-error" class="error-message hidden"></div>
+            </form>
+
+            <!-- Register Form -->
+            <form id="register-form" class="auth-form">
+                <div class="form-group">
+                    <label for="register-username" class="form-label">Username</label>
+                    <input type="text" id="register-username" class="form-control" placeholder="Choose a username" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-email" class="form-label">Email</label>
+                    <input type="email" id="register-email" class="form-control" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-password" class="form-label">Password</label>
+                    <input type="password" id="register-password" class="form-control" placeholder="Create a password" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-confirm" class="form-label">Confirm Password</label>
+                    <input type="password" id="register-confirm" class="form-control" placeholder="Confirm your password" required>
+                </div>
+                <button type="submit" class="btn btn--primary btn--full-width">Register</button>
+                <div id="register-error" class="error-message hidden"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dashboard Section -->
+    <div id="dashboard-section" class="dashboard-container hidden">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2 class="sidebar-title">Crowd Count</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-section="dashboard">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-text">Dashboard</span>
+                </a>
+                <a href="#" class="nav-item" data-section="video-analytics">
+                    <span class="nav-icon">📹</span>
+                    <span class="nav-text">Video Analytics</span>
+                </a>
+                <a href="#" class="nav-item" data-section="profile">
+                    <span class="nav-icon">👤</span>
+                    <span class="nav-text">Profile</span>
+                </a>
+                <a href="#" class="nav-item logout-btn">
+                    <span class="nav-icon">🚪</span>
+                    <span class="nav-text">Logout</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard View -->
+            <div id="dashboard-view" class="content-view active">
+                <div class="welcome-section">
+                    <h1 class="welcome-title">Welcome, <span id="username-display">User</span> 👋</h1>
+                </div>
+                
+                <div class="dashboard-overview">
+                    <h2 class="overview-title">Dashboard Overview 📊</h2>
+                    <p class="overview-description">
+                        This is your analytics dashboard. Here you can find insights and data from your video analytics, 
+                        including crowd density, traffic flow, and more.
+                    </p>
+                    
+                    <div class="analytics-grid">
+                        <div class="analytics-card">
+                            <h3>Analytics Content</h3>
+                            <p>Future analytics widgets will be displayed here.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Video Analytics View -->
+            <div id="video-analytics-view" class="content-view">
+                <div class="welcome-section">
+                    <h1 class="welcome-title">Video Analytics 📹</h1>
+                </div>
+                <div class="content-placeholder">
+                    <h3>Video Analytics Dashboard</h3>
+                    <p>Video analytics features will be implemented here.</p>
+                </div>
+            </div>
+
+            <!-- Profile View -->
+            <div id="profile-view" class="content-view">
+                <div class="welcome-section">
+                    <h1 class="welcome-title">Profile 👤</h1>
+                </div>
+                <div class="content-placeholder">
+                    <h3>User Profile</h3>
+                    <p>User profile management will be available here.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay hidden">
+        <div class="loading-spinner"></div>
+        <p>Loading...</p>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
