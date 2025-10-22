@@ -1,0 +1,111 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CROWD COUNT</title>
+
+  <link rel="stylesheet" href="{% static 'index.css' %}">
+
+  <style>
+    /* Inline CSS (optional) */
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+      font-family: 'Poppins', sans-serif;
+      color: white;
+      overflow: hidden;
+    }
+
+    .container {
+      text-align: center;
+      animation: fade-in 1.2s ease-in-out;
+    }
+
+    h1 {
+      font-size: 4.5rem;
+      font-weight: 900;
+      text-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      margin-bottom: 0.5rem;
+    }
+
+    p {
+      font-size: 1.5rem;
+      font-weight: 500;
+      opacity: 0.9;
+      margin-bottom: 2rem;
+    }
+
+    .button-group {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+    }
+
+    .btn-primary, .btn-outline {
+      display: inline-block;
+      padding: 0.9rem 2rem;
+      font-size: 1.1rem;
+      border-radius: 9999px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 600;
+      text-decoration: none;
+      text-align: center;
+    }
+
+    .btn-primary {
+      background-color: white;
+      color: #1e3a8a;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    }
+
+    .btn-primary:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn-outline {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(5px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    }
+
+    .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(1.05);
+    }
+
+    @keyframes fade-in {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>CROWD COUNT</h1>
+    <p>Modern Crowd Management Dashboard</p>
+    <div class="button-group">
+      <!-- Updated: <a> styled as buttons -->
+      <a href="{% url 'login' %}" class="btn-primary">Login →</a>
+      <a href="{% url 'register' %}" class="btn-outline">Get Started</a>
+    </div>
+  </div>
+</body>
+</html>

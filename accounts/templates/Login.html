@@ -1,0 +1,104 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login | Crowd Count</title>
+  <link rel="stylesheet" href="{% static 'index.css' %}">
+  <style>
+    /* === RESET === */
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family: "Poppins", sans-serif; background: hsl(0,0%,98%); color:hsl(0,0%,10%); display:flex; min-height:100vh; }
+
+    /* === LEFT SIDE === */
+    .left { flex:1; display:flex; align-items:center; justify-content:center; padding:2rem; animation:fade-in 0.8s ease; }
+    .form-container { width:100%; max-width:400px; background:white; border-radius:20px; padding:2.5rem; box-shadow:0 0 20px rgba(0,0,0,0.05); }
+    .form-container h1 { font-size:2.5rem; text-align:center; margin-bottom:0.5rem; }
+    .form-container p { text-align:center; color:hsl(0,0%,45%); margin-bottom:2rem; }
+
+    .input-group { position:relative; margin-bottom:1.5rem; }
+    .input-group input { width:100%; height:50px; border:none; outline:none; background:hsl(0,0%,95%); border-radius:50px; padding-left:45px; font-size:1rem; }
+    .input-group i { position:absolute; top:50%; left:18px; transform:translateY(-50%); color:hsl(0,0%,50%); }
+
+    button { width:100%; height:50px; background:hsl(220,90%,56%); border:none; border-radius:50px; color:white; font-size:1rem; font-weight:600; cursor:pointer; transition:0.3s; }
+    button:hover { background:hsl(220,90%,48%); }
+
+    .links { display:flex; justify-content:space-between; font-size:0.9rem; margin-top:1rem; }
+    .links a { text-decoration:none; color:hsl(220,90%,56%); font-weight:500; }
+
+    .social { text-align:center; margin-top:2rem; }
+    .social p { color:hsl(0,0%,45%); margin-bottom:1rem; }
+    .social-buttons { display:flex; justify-content:center; gap:1rem; }
+    .social-buttons button { width:50px; height:50px; border-radius:50%; border:1px solid hsl(0,0%,85%); background:white; display:flex; align-items:center; justify-content:center; }
+    .social-buttons img { width:25px; height:25px; }
+
+    /* === RIGHT SIDE === */
+    .right { flex:1; display:none; align-items:center; justify-content:center; background:linear-gradient(135deg, hsl(210,90%,80%), hsl(220,90%,65%)); }
+    .brand { background:white; padding:3rem 5rem; border-radius:30px; text-align:center; box-shadow:0 0 25px rgba(0,0,0,0.1); animation:slide-in-left 1s ease; }
+    .brand h2 { font-size:3rem; font-weight:900; }
+    .brand h2:first-child { color:black; }
+    .brand h2:last-child { color:hsl(220,90%,56%); }
+
+    /* === ANIMATIONS === */
+    @keyframes fade-in { from{opacity:0; transform:translateY(20px);} to{opacity:1; transform:translateY(0);} }
+    @keyframes slide-in-left { from{opacity:0; transform:translateX(50px);} to{opacity:1; transform:translateX(0);} }
+
+    /* === RESPONSIVE === */
+    @media (min-width: 992px) { .right { display:flex; } }
+  </style>
+</head>
+<body>
+  <div class="left">
+    <div class="form-container">
+      <h1>Welcome</h1>
+      <p>Login into your account</p>
+
+      <!-- Django Login Form -->
+      <form method="POST">
+        {% csrf_token %}
+
+        <div class="input-group">
+          <i>📧</i>
+          <input type="text" name="username" placeholder="Username or Email" required>
+        </div>
+
+        <div class="input-group">
+          <i>🔑</i>
+          <input type="password" name="password" placeholder="Password" required>
+        </div>
+
+        <button type="submit">Sign In</button>
+
+        <div class="links">
+          <div>
+            <span>New User? </span><a href="{% url 'register' %}">Register</a>
+          </div>
+          <a href="#">Forgot Password?</a>
+        </div>
+
+        <div class="social">
+          <p>Login with others</p>
+          <div class="social-buttons">
+            <button type="button">
+              <img src="https://www.google.com/favicon.ico" alt="Google" />
+            </button>
+            <button type="button">
+              <svg width="25" height="25" fill="#1877F2" viewBox="0 0 24 24">
+                <path d="M24 12.073c0-6.627-5.373-12-12-12S0 5.446 0 12.073c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953h-1.436c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="right">
+    <div class="brand">
+      <h2>CROWD</h2>
+      <h2>COUNT</h2>
+    </div>
+  </div>
+</body>
+</html>
