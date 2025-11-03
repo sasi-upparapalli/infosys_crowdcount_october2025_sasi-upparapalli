@@ -1,0 +1,7 @@
+Flask
+Flask-SQLAlchemy
+opencv-python
+Pillow
+ultralytics
+deep-sort-realtime
+numpy

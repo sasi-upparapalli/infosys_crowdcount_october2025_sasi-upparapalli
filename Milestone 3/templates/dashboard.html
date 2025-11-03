@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Zone Manager</h2>
+                <p>Hello, {{ username }}</p>
+                <a href="{{ url_for('profile') }}" class="user-info-btn">User Information</a>
+            </div>
+            <nav class="sidebar-nav" style="display:flex; flex-direction:column; gap:12px;">
+                <ul>
+                    <li><button id="zone-manipulation-btn" class="sidebar-btn">Zone Manipulation</button></li>
+                    <div id="sub-options" style="display: none;">
+                        <li><button id="webcam-btn" class="sidebar-btn sub-btn">Use Webcam 📹</button></li>
+                        <li><button id="upload-video-btn" class="sidebar-btn sub-btn">Upload Video 📁</button></li>
+                        <li><button id="draw-zones-btn" class="sidebar-btn sub-btn">Draw Zones ✏️</button></li>
+                        <li><button id="preview-zones-btn" class="sidebar-btn sub-btn">Preview Zones 👀</button></li>
+                        <li><button id="track-ids-btn" class="sidebar-btn sub-btn">Track IDs 🔢</button></li>
+                        <li><button id="edit-zones-btn" class="sidebar-btn sub-btn">Edit Zones ✍️</button></li>
+                        <li><button id="delete-zone-btn" class="sidebar-btn sub-btn">Delete Zone 🗑️</button></li>
+                    </div>
+                    <li style="margin-top:12px;"><a href="{{ url_for('live_dashboard') }}" class="sidebar-btn">Live Dashboard</a></li>
+                    <li style="margin-top:auto;"><a href="{{ url_for('logout') }}" class="sidebar-btn logout-btn">Logout</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="main-header">
+                <h1>Video Zone Dashboard</h1>
+            </header>
+
+            <div class="content-area">
+                <div id="welcome-section" class="section">
+                    <h3>Welcome to your Dashboard! 👋</h3>
+                    <p>Click "Zone Manipulation" in the sidebar to get started.</p>
+                </div>
+
+                <div id="upload-section" class="section" style="display: none;">
+                    <h3>Upload a Video</h3>
+                    <form id="upload-form">
+                        <input type="file" id="video-file-input" name="video" accept="video/*">
+                        <button type="submit" class="cta-btn">Upload</button>
+                    </form>
+                </div>
+
+                <div id="video-player-section" class="section" style="display: none;">
+                    <h3>Video Player</h3>
+                    <div class="video-player-container">
+                        <video id="video-player" controls preload="auto" width="100%" height="100%">
+                            <source id="video-source" src="" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                        <canvas id="zone-canvas" width="860" height="440" style="position: absolute; top: 0; left: 0;"></canvas>
+                    </div>
+                </div>
+
+                <div id="webcam-section" class="section" style="display: none;">
+                    <h3>Webcam Feed</h3>
+                    <video id="webcam-feed" autoplay playsinline width="860" height="440"></video>
+                    <canvas id="webcam-canvas" width="860" height="440" style="position: absolute; top: 0; left: 0;"></canvas>
+                </div>
+
+                <div id="edit-section" class="section" style="display: none;">
+                    <h3>Edit Zone Name</h3>
+                    <div class="form-group">
+                        <label for="edit-zone-select">Select a zone to edit:</label>
+                        <select id="edit-zone-select" class="form-select"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="new-label-input">New Zone Name:</label>
+                        <input type="text" id="new-label-input" class="form-input" placeholder="Enter new name">
+                    </div>
+                    <button id="confirm-edit-btn" class="cta-btn">Save Changes</button>
+                </div>
+
+                <div id="delete-section" class="section" style="display: none;">
+                    <h3>Delete Zone</h3>
+                    <div class="form-group">
+                        <label for="zone-select">Select a zone to delete:</label>
+                        <select id="zone-select" class="form-select"></select>
+                    </div>
+                    <button id="confirm-delete-btn" class="delete-btn">Delete Selected Zone</button>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
