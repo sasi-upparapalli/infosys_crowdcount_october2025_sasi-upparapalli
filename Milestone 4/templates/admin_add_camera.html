@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Camera</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Admin Panel</h2>
+                <p>Hello, {{ username }}</p>
+            </div>
+            <nav class="sidebar-nav">
+                <ul style="display:flex; flex-direction:column; gap:12px;">
+                    <li><a href="{{ url_for('admin_dashboard') }}" class="sidebar-btn">Dashboard</a></li>
+                    <li><a href="{{ url_for('admin_users') }}" class="sidebar-btn">Users</a></li>
+                    <li><a href="{{ url_for('admin_zones') }}" class="sidebar-btn">Zones</a></li>
+                    <li><a href="{{ url_for('admin_cameras') }}" class="sidebar-btn">Cameras</a></li>
+                    <li><a href="{{ url_for('admin_activity_log') }}" class="sidebar-btn">Activity Log</a></li>
+                    <li style="margin-top:auto;"><a href="{{ url_for('logout') }}" class="sidebar-btn logout-btn">Logout</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="main-header">
+                <h1>Add Camera</h1>
+            </header>
+
+            <div class="content-area">
+                <div class="card" style="max-width: 500px;">
+                    <form method="POST">
+                        <div class="form-group">
+                            <label for="name">Camera Name</label>
+                            <input type="text" id="name" name="name" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="url">Camera URL/IP</label>
+                            <input type="text" id="url" name="url" class="form-input" placeholder="e.g., rtsp://camera-ip:554/stream" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="location">Location</label>
+                            <input type="text" id="location" name="location" class="form-input" placeholder="e.g., Entrance">
+                        </div>
+                        <div class="form-group">
+                            <label for="user_id">Assign to User</label>
+                            <select id="user_id" name="user_id" class="form-select" required>
+                                <option value="">Select a user</option>
+                                {% for user in users %}
+                                <option value="{{ user }}">{{ user }} ({{ user }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit" class="cta-btn">Add Camera</button>
+                        <a href="{{ url_for('admin_cameras') }}" style="margin-left: 10px; padding: 10px 20px; background-color: #ccc; color: #333; text-decoration: none; border-radius: 5px;">Cancel</a>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

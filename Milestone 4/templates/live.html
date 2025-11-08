@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Removed old dark-theme styles. Layout styles remain. */
+        .live-grid { 
+            display: grid; 
+            grid-template-columns: 2fr 1fr; 
+            grid-template-rows: auto auto; 
+            gap: 24px; 
+        }
+        .kpi-grid { 
+            display: grid; 
+            grid-template-columns: 1fr; 
+            gap: 8px; 
+        }
+        .no-margin { 
+            margin: 0; 
+        }
+        .toast { 
+            position: fixed; 
+            right: 24px; 
+            bottom: 24px; 
+            background-color: var(--sidebar-bg); 
+            color: white;
+            padding: 12px 16px; 
+            border-radius: 10px; 
+            display: none; 
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            z-index: 999;
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const alertBox = document.getElementById('alert-box');
+
+            let evtSrc = null;
+
+            function openSSE() {
+                if (evtSrc) evtSrc.close();
+                evtSrc = new EventSource('/stats_stream');
+                evtSrc.onmessage = (e) => {
+                    const data = JSON.parse(e.data);
+                    updateChartsAndKpis(data.counts, data.thresholds || {});
+                };
+            }
+
+            fetch('/start_stream', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({}) })
+              .then(async (r) => { openSSE(); await primeZonesUI(); })
+              .catch(async () => { openSSE(); await primeZonesUI(); });
+
+            const lineCtx = document.getElementById('lineChart').getContext('2d');
+            const barCtx = document.getElementById('barChart').getContext('2d');
+            const labels = [];
+            const datasetsMap = {};
+            const lineChart = new Chart(lineCtx, { type:'line', data:{ labels, datasets:[] }, options:{ responsive:true, animation:false, plugins:{legend:{labels:{color: '#334155'}}}, scales:{y:{beginAtZero:true, ticks:{color: '#64748b'}}, x:{ticks:{color: '#64748b'}}} }});
+            const barChart = new Chart(barCtx, { type:'bubble', data:{ datasets:[] }, options:{ responsive:true, animation:false, plugins:{legend:{labels:{color: '#334155'}}}, scales:{x:{title:{display:true, text:'Time', color: '#64748b'}, ticks:{display:false}}, y:{type:'category', title:{display:true, text:'Zones', color: '#64748b'}, labels:[], ticks:{color: '#64748b'}}} }});
+
+            async function primeZonesUI() {
+                const res = await fetch('/get_zones');
+                if (!res.ok) return;
+                const zones = await res.json();
+                let saved = {};
+                try {
+                    const tr = await fetch('/get_thresholds');
+                    if (tr.ok) saved = await tr.json();
+                } catch {}
+                zones.forEach((z, idx) => {
+                    const name = z.label;
+                    if (!document.getElementById('kpi-' + name)) {
+                        const row = document.createElement('div');
+                        row.className = 'zone-item';
+                        row.id = 'kpi-' + name;
+                        const pref = (typeof saved[name] === 'number') ? saved[name] : '';
+                        row.innerHTML = `<span class="zone-name">${name}</span>
+                                         <span class="zone-badge" id="kpi-val-${name}">0</span>
+                                         <input data-label="${name}" class="form-input" style="width:90px; margin-left:8px;" type="number" min="0" placeholder="limit" value="${pref}">`;
+                        document.getElementById('kpis').appendChild(row);
+                        // Updated chart colors to match the new theme
+                        const color = ['#0d9488', '#f59e0b', '#ef4444', '#3b82f6', '#6366f1'][idx % 5];
+                        lineChart.data.datasets.push({ label: name, data: [], borderColor: color, backgroundColor: color + '33', fill: true, tension: 0.3 });
+                    }
+                });
+                const ts = new Date().toLocaleTimeString();
+                labels.push(ts);
+                lineChart.data.datasets.forEach(ds => ds.data.push(0));
+                lineChart.update('none');
+                barChart.options.scales.y.labels = zones.map(z => z.label);
+                barChart.update('none');
+            }
+
+            function updateChartsAndKpis(counts, thresholds) {
+                const timestamp = new Date().toLocaleTimeString();
+                labels.push(timestamp);
+                if (labels.length > 20) labels.shift();
+
+                const legendZones = lineChart.data.datasets.map(d => d.label);
+                const countZones = Object.keys(counts || {});
+                const zones = Array.from(new Set([ ...legendZones, ...countZones ]));
+                zones.forEach((z, idx) => {
+                    if (!datasetsMap[z]) {
+                        // Updated chart colors to match the new theme
+                        const color = ['#0d9488', '#f59e0b', '#ef4444', '#3b82f6', '#6366f1'][idx % 5];
+                        datasetsMap[z] = { label:z, data:[], borderColor:color, backgroundColor:color + '33', borderWidth:2, tension:0.3, fill: true };
+                        lineChart.data.datasets.push(datasetsMap[z]);
+                        if (!document.getElementById('kpi-' + z)) {
+                            const row = document.createElement('div');
+                            row.className = 'zone-item';
+                            row.id = 'kpi-' + z;
+                            const pref = (typeof thresholds[z] === 'number') ? thresholds[z] : '';
+                            row.innerHTML = `<span class="zone-name">${z}</span>
+                                             <span class="zone-badge" id="kpi-val-${z}">0</span>
+                                             <input data-label="${z}" class="form-input" style="width:90px; margin-left:8px;" type="number" min="0" placeholder="limit" value="${pref}">`;
+                            document.getElementById('kpis').appendChild(row);
+                        }
+                    }
+                    const series = datasetsMap[z];
+                    const value = (typeof counts[z] === 'number') ? counts[z] : 0;
+                    series.data.push(value);
+                    if (series.data.length > 20) series.data.shift();
+                const badge = document.getElementById('kpi-val-' + z);
+                if (badge) badge.textContent = String(value);
+                });
+                lineChart.update('none');
+                
+                const zoneList = Object.keys(counts);
+                const timeIndex = labels.length;
+                if (barChart.data.datasets.length === 0) {
+                    barChart.data.datasets = zoneList.map((z) => ({ label: z, data: [] }));
+                    barChart.options.scales.y.labels = zoneList;
+                }
+                zoneList.forEach(z => {
+                    if (!barChart.data.datasets.find(ds => ds.label === z)) {
+                        barChart.data.datasets.push({ label: z, data: [] });
+                    }
+                });
+                barChart.data.datasets.forEach(ds => {
+                    const z = ds.label;
+                    const count = counts[z] || 0;
+                    const limit = thresholds[z];
+                    let lowMax, medMax;
+                    if (typeof limit === 'number') { lowMax = Math.max(1, Math.floor(limit*0.6)); medMax = limit; }
+                    else { lowMax = 3; medMax = 6; }
+                    let color = 'rgba(59,130,246,0.7)'; // Blue
+                    if (count > medMax) color = 'rgba(239,68,68,0.7)'; // Red
+                    else if (count > lowMax) color = 'rgba(245,158,11,0.7)'; // Amber
+                    ds.data.push({ x: timeIndex, y: z, r: Math.max(6, count*1.8), backgroundColor: color, borderColor: color });
+                    if (ds.data.length > 20) ds.data.shift();
+                });
+                barChart.update('none');
+
+                const msgs = [];
+                for (const z in counts) {
+                    const limit = thresholds[z];
+                    if (typeof limit === 'number') {
+                        if (counts[z] > limit) msgs.push(`<div>ALERT: '${z}' capacity exceeded (${counts[z]} people)!</div>`);
+                        else if (counts[z] === limit) msgs.push(`<div>Notice: Threshold reached in '${z}'.</div>`);
+                    }
+                }
+                if (msgs.length) {
+                    alertBox.style.display = 'block';
+                    alertBox.innerHTML = msgs.join('');
+                } else {
+                    alertBox.style.display = 'none'; // Hide if no alerts
+                }
+
+                const kpis = document.getElementById('kpis');
+                if (!kpis._limitHandlerAttached) {
+                    kpis.addEventListener('change', async (e) => {
+                        const inp = e.target;
+                        if (inp && inp.matches('input[data-label]')) {
+                            const payload = {}; payload[inp.dataset.label] = parseInt(inp.value || '0');
+                            await fetch('/set_thresholds', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)});
+                        }
+                    });
+                    kpis._limitHandlerAttached = true;
+                }
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar" style="position:sticky; top:0; align-self:start; height: 100vh;">
+            <div class="sidebar-header">
+                <h2>Live Dashboard</h2>
+                <p>Hello, {{ username }}</p>
+                 <a href="{{ url_for('profile') }}" class="user-info-btn">User Information</a>
+            </div>
+            <nav class="sidebar-nav" style="display:flex; flex-direction:column; flex-grow: 1;">
+                <ul style="display:flex; flex-direction:column; gap:12px; flex-grow: 1; margin:0; padding:0; list-style:none;">
+                    <li><a href="{{ url_for('dashboard') }}" class="sidebar-btn">Zone Manipulation</a></li>
+                    <li style="margin-top:auto;"><a href="{{ url_for('logout') }}" class="sidebar-btn logout-btn">Logout</a></li>
+                </ul>
+            </nav>
+        </aside>
+        <main class="main-content">
+            <header class="main-header">
+                <h1>Real-time Population Analytics</h1>
+            </header>
+            <div class="content-area live-grid">
+                <div class="card" style="grid-row: 1 / span 2;">
+                    <h3 class="no-margin">Population Over Time</h3>
+                    <canvas id="lineChart" height="220"></canvas>
+                </div>
+                <div class="card">
+                    <h3 class="no-margin">Zone Occupancy</h3>
+                    <div id="kpis" class="kpi-grid"></div>
+                </div>
+                <div class="card">
+                    <h3 class="no-margin">Activity Heatmap</h3>
+                    <canvas id="barChart" height="140"></canvas>
+                </div>
+                <div class="card" style="grid-column: 2; grid-row: 3;">
+                    <h3 class="no-margin">Alerts</h3>
+                    <div id="alert-box" class="alert">
+                        </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

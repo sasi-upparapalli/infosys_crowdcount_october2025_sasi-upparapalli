@@ -1,0 +1,107 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .admin-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .stat-card h3 {
+            margin: 0;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        .stat-card .value {
+            font-size: 32px;
+            font-weight: bold;
+            margin: 10px 0 0 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Admin Panel</h2>
+                <p>Hello, {{ username }}</p>
+            </div>
+            <nav class="sidebar-nav">
+                <ul style="display:flex; flex-direction:column; gap:12px;">
+                    <li><a href="{{ url_for('admin_dashboard') }}" class="sidebar-btn">Dashboard</a></li>
+                    <li><a href="{{ url_for('admin_users') }}" class="sidebar-btn">Users</a></li>
+                    <li><a href="{{ url_for('admin_zones') }}" class="sidebar-btn">Zones</a></li>
+                    <li><a href="{{ url_for('admin_cameras') }}" class="sidebar-btn">Cameras</a></li>
+                    <li><a href="{{ url_for('admin_activity_log') }}" class="sidebar-btn">Activity Log</a></li>
+                    <li style="margin-top:auto;"><a href="{{ url_for('dashboard') }}" class="sidebar-btn">Home Dashboard</a></li>
+
+                    <li style="margin-top:auto;"><a href="{{ url_for('logout') }}" class="sidebar-btn logout-btn">Logout</a></li>
+
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="main-header">
+                <h1>Admin Dashboard</h1>
+                
+            </header>
+
+            <div class="content-area">
+                <div class="admin-grid">
+                    <div class="stat-card">
+                        <h3>Total Users</h3>
+                        <div class="value">{{ total_users }}</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Zones</h3>
+                        <div class="value">{{ total_zones }}</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Cameras</h3>
+                        <div class="value">{{ total_cameras }}</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Recent Activities</h3>
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background-color: #f0f0f0;">
+                                <th style="padding: 10px; text-align: left;">User</th>
+                                <th style="padding: 10px; text-align: left;">Action</th>
+                                <th style="padding: 10px; text-align: left;">Entity Type</th>
+                                <th style="padding: 10px; text-align: left;">Timestamp</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for activity in recent_activities %}
+                            <tr style="border-bottom: 1px solid #ddd;">
+                                <td style="padding: 10px;">{{ activity[0] }}</td>
+                                <td style="padding: 10px;">{{ activity[1] }}</td>
+                                <td style="padding: 10px;">{{ activity[2] or '-' }}</td>
+                                <td style="padding: 10px;">{{ activity[3] }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

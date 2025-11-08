@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity Log</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Admin Panel</h2>
+                <p>Hello, {{ username }}</p>
+            </div>
+            <nav class="sidebar-nav">
+                <ul style="display:flex; flex-direction:column; gap:12px;">
+                    <li><a href="{{ url_for('admin_dashboard') }}" class="sidebar-btn">Dashboard</a></li>
+                    <li><a href="{{ url_for('admin_users') }}" class="sidebar-btn">Users</a></li>
+                    <li><a href="{{ url_for('admin_zones') }}" class="sidebar-btn">Zones</a></li>
+                    <li><a href="{{ url_for('admin_cameras') }}" class="sidebar-btn">Cameras</a></li>
+                    <li><a href="{{ url_for('admin_activity_log') }}" class="sidebar-btn">Activity Log</a></li>
+                    <li style="margin-top:auto;"><a href="{{ url_for('logout') }}" class="sidebar-btn logout-btn">Logout</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="main-header">
+                <h1>Activity Logs</h1>
+            </header>
+
+            <div class="content-area">
+                <div class="card">
+                    <!-- ABOVE your <table> -->
+<div style="margin-bottom: 20px;">
+    <a href="{{ url_for('export_logs_csv') }}" class="cta-btn">Export CSV</a>
+    <a href="{{ url_for('export_logs_pdf') }}" class="cta-btn" style="background-color: #4ecdc4;">Export PDF</a>
+</div>
+
+                    <div class="activity-table-wrapper">
+  <table class="activity-table">
+    <thead>
+      <tr>
+        <th class="id-col">ID</th>
+        <th>Username</th>
+        <th class="action-col">Action</th>
+        <th>Entity Type</th>
+        <th class="details-col">Details</th>
+        <th>IP Address</th>
+        <th class="timestamp-col">Timestamp</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for log in logs %}
+      <tr>
+        <td class="id-col">{{ log[0] }}</td>
+        <td>{{ log[1] }}</td>
+        <td class="action-col">{{ log[2] }}</td>
+        <td>{{ log[3] or '-' }}</td>
+        <td class="details-col">{{ log[4] or '-' }}</td>
+        <td>{{ log[5] or '-' }}</td>
+        <td class="timestamp-col">{{ log[6] }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+
+                    <!-- Pagination -->
+                    <div style="display: flex; justify-content: center; gap: 10px; margin-top: 20px;">
+                        {% if page > 1 %}
+                        <a href="{{ url_for('admin_activity_log', page=page-1) }}" class="cta-btn" style="padding: 8px 15px; font-size: 0.9rem;">Previous</a>
+                        {% endif %}
+                        
+                        <span style="padding: 8px 15px; background-color: #f0f0f0; border-radius: 5px;">
+                            Page {{ page }} of {{ total_pages }}
+                        </span>
+                        
+                        {% if page < total_pages %}
+                        <a href="{{ url_for('admin_activity_log', page=page+1) }}" class="cta-btn" style="padding: 8px 15px; font-size: 0.9rem;">Next</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
